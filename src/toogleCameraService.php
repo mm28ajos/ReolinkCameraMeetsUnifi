@@ -66,7 +66,6 @@ for (;;)
 	try {
 		if (anyConnectedClientDeviceMappedToAPDevice($controlleruser, $controllerpassword, $controllerurl, $site_id, $controllerversion, $apMACToClientMACMapping, $debug))
 		{
-		    outputStdout(ob_get_contents(), $debug); // Store buffer in variable
 		    // in case there is a wifi client device connected to a mapped AP device and the motion detecion settings are enabled, log in to the camera and disable them
 		    if ($motionDetectionEnabled)
 		    {
