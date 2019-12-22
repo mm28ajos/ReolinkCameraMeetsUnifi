@@ -1,8 +1,8 @@
 ## Reolink Camera meets UniFi
 
-A PHP-cli script to disable e-mail and push notification on motion detection of Reolink cameras as well as FTP upload on motion detection and near infrared light in case no predefined Wifi client device is connected to a UniFi access point.
+A PHP systemd service to disable e-mail and push notification on motion detection of Reolink cameras as well as FTP upload on motion detection and near infrared light in case no predefined Wifi client device is connected to a UniFi access point.
 
-This script is useful if you want to disable the camera (i.e. notifications on motion/FTP storage on motion detection and near infrared lights) in case you are at home. Being at home is detected by the script by checking the connected Wifi client devices connected to the Unifi network. Hereby, you can define mappings of Wifi client devices to Wifi access points by MAC addresses e.g. to exclude a particular access point from being relevant for switching of the motion detection notification. 
+This service is useful if you want to disable the camera (i.e. notifications on motion/FTP storage on motion detection and near infrared lights) in case you are at home. Being at home is detected by the service by checking the connected Wifi client devices connected to the Unifi network. Hereby, you can define mappings of Wifi client devices to Wifi access points by MAC addresses e.g. to exclude a particular access point from being relevant for switching of the motion detection notification. 
 
 ## Requirements
 
@@ -20,37 +20,52 @@ Execute the following `git` command from the shell in your project directory:
 git clone https://github.com/mm28ajos/ReolinkCameraMeetsUnifi.git
 ```
 
-You should use [Composer](#composer) to resolve the required dependecies of the CLI script.
+You should use [Composer](#composer) to resolve the required dependecies of the service.
 
 Follow the [installation instructions](https://getcomposer.org/doc/00-intro.md) if you do not already have composer installed.
 
-Once composer is installed, simply execute this command from the shell in your git directory:
+Once composer is installed, simply execute this command from the shell in your git directory in the folder src:
 
 ```sh
+cd src
 composer update
 ```
 
-## Example usage
+### Execute install.sh
+Execute the install.sh script in the git folder with root permission.
+```sh
+sudo sh install.sh
+```
 
 ### Adjust config
-Adjust the config.php to your needs.
+Adjust the reolinkUnifi.conf to your needs.
 ```sh
-nano /path/to/Git/ReolinkCameraMeetsUnifi/config.php
+sudo nano /etc/reolinkUnifi.conf
+```
+### Start and enable systemd service
+Start and enable the service.
+```sh
+sudo systemctl start ReolinkCameraMeetsUnifi.service 
+sudo systemctl enable ReolinkCameraMeetsUnifi.service 
 ```
 
-### Add cronjob
-For example, add cronjobs checking for disconnected/connected Wifi client devices and necessary switching of camera settings every 10 seconds. This could also be solved by enhancing the script to run as systemd service.
+### Check service status and logs
+Check the service status to see if there is any error.
 ```sh
-crontab -e
+sudo systemctl status ReolinkCameraMeetsUnifi.service 
 ```
-Add the follwing lines.
+Alternativly, check the syslog to see if there is any error.
+```sh
+sudo tail /var/log/syslog
 ```
-* * * * * /usr/bin/php /path/to/Git/ReolinkCameraMeetsUnifi/toogleCamera.php
-* * * * * (sleep 10; /usr/bin/php /path/to/Git/ReolinkCameraMeetsUnifi/toogleCamera.php)
-* * * * * (sleep 20; /usr/bin/php /path/to/Git/ReolinkCameraMeetsUnifi/toogleCamera.php)
-* * * * * (sleep 30; /usr/bin/php /path/to/Git/ReolinkCameraMeetsUnifi/toogleCamera.php)
-* * * * * (sleep 40; /usr/bin/php /path/to/Git/ReolinkCameraMeetsUnifi/toogleCamera.php)
-* * * * * (sleep 50; /usr/bin/php /path/to/Git/ReolinkCameraMeetsUnifi/toogleCamera.php)
+
+### Optional: Adjust config and restart service
+In case you had to correct the config, restart the service to make the config changes available.
+```sh
+sudo systemctl restart ReolinkCameraMeetsUnifi.service 
+```
+
+
 ```
 
 ## Credits

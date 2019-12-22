@@ -1,0 +1,13 @@
+[Unit]
+Description=Toogles a Reolink camera's motion detection actions based on connected wifi clients to a Unifi based network.
+After=network.target
+StartLimitIntervalSec=0
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=markus
+ExecStart=/usr/bin/env php toogleCameraService.php
+
+[Install]
+WantedBy=multi-user.target
