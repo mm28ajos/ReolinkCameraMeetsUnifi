@@ -1,6 +1,6 @@
 {
     "require": {
-      	"mm28ajos/php-reolink-camera-api": "^1.0",
+      	"mm28ajos/php-reolink-camera-api": "^1.0.1",
         "art-of-wifi/unifi-api-client": "^1.1"
     }
 }
