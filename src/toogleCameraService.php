@@ -55,9 +55,9 @@ while (!$initCameraSetting)
 	{
 		outputErr($e->getMessage());
 		outputErr('Could not connect to Reolink Camera');
+		// wait 5 seconds for next try
+		sleep(5);
 	}
-	// wait 5 seconds for next try
-	sleep(5);
 }
 
 // loop to check constantly for need to toogle camera settings
