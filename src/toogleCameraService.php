@@ -49,6 +49,9 @@ while (!$initCameraSetting)
 
 			// set init falg to true
 			$initCameraSetting = true;
+
+			// do some default logging
+			outputStdout("Successfully set inital camera settings.", true);
 		} else {
 			// exit with error code 1
 			outputErr('Could not connect to Reolink Camera');
@@ -83,8 +86,9 @@ for (;;)
 
 			    // set the flag to false to remember the setting is disabled at the camera for the next run of the loop
 			    $motionDetectionEnabled = false;
-
-			    outputStdout('Wifi client device connected to mapped AP: Motion dection disabeled successfully.', $debug);
+			    
+			    // do some default logging
+			    outputStdout('Wifi client device connected to mapped AP: Motion dection disabeled successfully.', true);
 			} else {
 			    outputErr('Could not connect to camera');
 			}
@@ -106,8 +110,9 @@ for (;;)
 
 			    // set the flag to true to remeber the setting is enbled at the camera for the next run of the loop
 			    $motionDetectionEnabled = true;
-			    
-			    outputStdout('No wifi client device connected to mapped AP: Motion dection enabled successfully.', $debug);
+
+			    // do some default logging
+			    outputStdout('No wifi client device connected to mapped AP: Motion dection enabled successfully.', true);
 			} else {
 			    outputErr('Could not connect to camera.');
 			}
