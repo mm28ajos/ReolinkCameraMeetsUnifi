@@ -117,4 +117,7 @@ function toogleMotionDetectionActions($reolink_connection, $toogleBoolean)
 
 	// toogle the FTP upload on a detected motion
 	$reolink_connection->toggleFTPUpload($toogleBoolean);
+
+	// toogle the near infrared lights
+	$reolink_connection->toggleInfraredLight($toogleBoolean);
 }

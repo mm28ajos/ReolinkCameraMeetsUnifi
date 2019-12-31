@@ -41,9 +41,6 @@ while (!$initCameraSetting)
 			// set flag to indicate motion detection is disabled
 			$motionDetectionEnabled = false;
 
-		        // toogle the near infrared lights off
-		        $reolink_connection->toggleInfraredLight(false);
-
 			// logout from the camera
 			$reolink_connection->logout();
 
