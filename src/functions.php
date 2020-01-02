@@ -109,15 +109,44 @@ function anyConnectedClientDeviceMappedToAPDevice($controlleruser, $controllerpa
  */
 function toogleMotionDetectionActions($reolink_connection, $toogleBoolean)
 {
-	// toogle the e-mail send on a detected motion
-	$reolink_connection->toggleMotionEmail($toogleBoolean);
+	// if the motion detection shall be enabled, toogle the IR lights on at first and
+	// wait for 10 seconds befor enabling the notifications in order to avoid
+	// false positive detections caused by the lightning change by the IR lights.
+	if ($toogleBoolean)
+	{
+		// toogle the near infrared lights
+		$reolink_connection->toggleInfraredLight($toogleBoolean);
+		
+		// wait 10 seconds for IR light to switch on
+		sleep(10);
 
-	// toogle the push notification to the Reolink app on a detected motion
-	$reolink_connection->toggleMotionPush($toogleBoolean);
+		// toogle the e-mail send on a detected motion
+		$reolink_connection->toggleMotionEmail($toogleBoolean);
 
-	// toogle the FTP upload on a detected motion
-	$reolink_connection->toggleFTPUpload($toogleBoolean);
+		// toogle the push notification to the Reolink app on a detected motion
+		$reolink_connection->toggleMotionPush($toogleBoolean);
 
-	// toogle the near infrared lights
-	$reolink_connection->toggleInfraredLight($toogleBoolean);
+		// toogle the FTP upload on a detected motion
+		$reolink_connection->toggleFTPUpload($toogleBoolean);
+
+	} else {
+	        // if the motion detection shall be disabled, toogle off the motion detection actions at first and
+	        // wait for 10 seconds befor enabling the IR lights in order to avoid
+       		// false positive detections caused by the lightning change by the IR lights.
+  
+		// toogle the e-mail send on a detected motion
+		$reolink_connection->toggleMotionEmail($toogleBoolean);
+
+		// toogle the push notification to the Reolink app on a detected motion
+		$reolink_connection->toggleMotionPush($toogleBoolean);
+
+		// toogle the FTP upload on a detected motion
+		$reolink_connection->toggleFTPUpload($toogleBoolean);
+
+                // wait 10 seconds for IR light to switch off
+                sleep(10);
+	
+		// toogle the near infrared lights
+		$reolink_connection->toggleInfraredLight($toogleBoolean);
+	}
 }
