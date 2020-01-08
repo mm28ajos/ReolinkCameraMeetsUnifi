@@ -27,6 +27,12 @@ $reolink_connection->setDebug($debug);
 // set init camera flag false
 $initCameraSetting = false;
 
+// define threshold period in seconds with no wifi client connected for switching on motion detection
+$toogleOnThreshold = 5;
+
+// define the seconds to sleep befor running the next check
+$sleepTimeLoop = 2;
+
 // init camera settings until success
 while (!$initCameraSetting)
 {
@@ -39,18 +45,19 @@ while (!$initCameraSetting)
 			toogleMotionDetectionActions($reolink_connection, false);
 
 			// set flag to indicate motion detection is disabled
-			$motionDetectionEnabled = false;
+			$motionDetectionStatus = false;
+			$motionDetectionTarget = false;
 
 			// logout from the camera
 			$reolink_connection->logout();
 
-			// set init falg to true
+			// set init flag to true
 			$initCameraSetting = true;
 
 			// do some default logging
 			outputStdout("Successfully set inital camera settings.", true);
 		} else {
-			// exit with error code 1
+			// do some logging
 			outputErr('Could not connect to Reolink Camera');
 		}
 	}
@@ -67,55 +74,77 @@ while (!$initCameraSetting)
 for (;;)
 {
 	try {
-		if (anyConnectedClientDeviceMappedToAPDevice($controlleruser, $controllerpassword, $controllerurl, $site_id, $controllerversion, $apMACToClientMACMapping, $debug))
+		$motionDetectionTargetNew = !anyConnectedClientDeviceMappedToAPDevice($controlleruser, $controllerpassword, $controllerurl, $site_id, $controllerversion, $apMACToClientMACMapping, $debug);
+		$dateTime = new DateTime();
+		$timestamp = $dateTime->getTimestamp();
+		$motionDetectionTargetTimestampNew = $timestamp;
+		
+		if ($motionDetectionTargetNew != $motionDetectionTarget)
 		{
-		    // in case there is a wifi client device connected to a mapped AP device and the motion detecion settings are enabled, log in to the camera and disable them
-		    if ($motionDetectionEnabled)
-		    {
-			// login to the camera
-			if ($reolink_connection->login())
+			$motionDetectionTarget = $motionDetectionTargetNew;
+			$motionDetectionTargetTimestamp = $motionDetectionTargetTimestampNew;
+		}
+
+		if ($motionDetectionTarget != $motionDetectionStatus)
+		{
+			if ($motionDetectionTarget)
 			{
-			    // disable motion detection acations
-			    toogleMotionDetectionActions($reolink_connection, false);
+				if ($timestamp - $motionDetectionTargetTimestamp > $toogleOnThreshold)
+				{
+					// do some default logging
+					outputStdout('No Wifi client device connected to mapped AP: Motion dection going to be enabled.', true);
 
-			    // logout from the camera
-			    $reolink_connection->logout();
+					// login to the camera
+					if ($reolink_connection->login())
+					{
+						// disable motion detection actions
+						toogleMotionDetectionActions($reolink_connection, true);
+		
+						// logout from the camera
+						$reolink_connection->logout();
 
-			    // set the flag to false to remember the setting is disabled at the camera for the next run of the loop
-			    $motionDetectionEnabled = false;
+						// set the flag to false to remember the setting is disabled at the camera for the next run of the loop
+						$motionDetectionStatus = true;
 			    
-			    // do some default logging
-			    outputStdout('Wifi client device connected to mapped AP: Motion dection disabeled successfully.', true);
+						// do some default logging
+						outputStdout('No Wifi client device connected to mapped AP: Motion dection enabled successfully.', true);
+					} else {
+					    outputErr('Could not connect to camera');
+					}
+	
+				} else {
+					// do some logging
+					outputStdout('Toogle on threshold not reached.', $debug);
+				}
 			} else {
-			    outputErr('Could not connect to camera');
+				// do some default logging
+				outputStdout('Wifi client device connected to mapped AP: Motion dection going to be disabled.', true);
+
+				// login to the camera
+				if ($reolink_connection->login())
+				{
+				    // disable motion detection actions
+				    toogleMotionDetectionActions($reolink_connection, false);
+
+				    // logout from the camera
+				    $reolink_connection->logout();
+
+				    // set the flag to false to remember the setting is disabled at the camera for the next run of the loop
+				    $motionDetectionStatus = false;
+				    
+				    // do some default logging
+				    outputStdout('Wifi client device connected to mapped AP: Motion dection disabeled successfully.', true);
+				} else {
+				    outputErr('Could not connect to camera');
+				}
 			}
-		    } else {
-			outputStdout('Wifi client device connected to mapped AP and motion dection already disabeled.', $debug);
-		    }
 		} else {
-		    // in case their is no client device connected to a mapped AP device and the motion detecion settings are disabeld, log in to the camera and enable them
-		    if(!$motionDetectionEnabled)
-		    {
-			// login to the camera
-			if ($reolink_connection->login())
+			if ($motionDetectionStatus)
 			{
-			    // enable the motion detection actions
-			    toogleMotionDetectionActions($reolink_connection, true);
-
-			    // logout from the camera
-			    $reolink_connection->logout();
-
-			    // set the flag to true to remeber the setting is enbled at the camera for the next run of the loop
-			    $motionDetectionEnabled = true;
-
-			    // do some default logging
-			    outputStdout('No wifi client device connected to mapped AP: Motion dection enabled successfully.', true);
+				outputStdout('No wifi client device connected to mapped AP and motion dection already enabled.', $debug);
 			} else {
-			    outputErr('Could not connect to camera.');
+				outputStdout('Wifi client device connected to mapped AP and motion dection already disabled.', $debug);
 			}
-		    } else {
-			outputStdout('No wifi client device connected to mapped AP and motion dection already enabled.', $debug);
-		    }
 		}
 	}
 
@@ -130,6 +159,6 @@ for (;;)
                 outputErr('Could not connect to Reolink Camera');
         }
 	
-	// sleep for 5 seconds befor checking connection of wifi clients again
-	sleep($checkIntervalInSeconds);
+	// sleep for some seconds befor checking connection of wifi clients again
+	sleep($sleepTimeLoop);
 }

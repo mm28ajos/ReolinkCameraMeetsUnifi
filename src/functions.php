@@ -131,7 +131,7 @@ function toogleMotionDetectionActions($reolink_connection, $toogleBoolean)
 
 	} else {
 	        // if the motion detection shall be disabled, toogle off the motion detection actions at first and
-	        // wait for 10 seconds befor enabling the IR lights in order to avoid
+	        // wait for 1 seconds befor disabling the IR lights in order to avoid
        		// false positive detections caused by the lightning change by the IR lights.
   
 		// toogle the e-mail send on a detected motion
@@ -143,8 +143,8 @@ function toogleMotionDetectionActions($reolink_connection, $toogleBoolean)
 		// toogle the FTP upload on a detected motion
 		$reolink_connection->toggleFTPUpload($toogleBoolean);
 
-                // wait 10 seconds for IR light to switch off
-                sleep(10);
+                // wait 1 seconds befor IR light are switched off
+		sleep(1);
 	
 		// toogle the near infrared lights
 		$reolink_connection->toggleInfraredLight($toogleBoolean);
