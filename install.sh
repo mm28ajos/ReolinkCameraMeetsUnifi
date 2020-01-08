@@ -2,8 +2,11 @@
 
 # copy service file
 cp ReolinkCameraMeetsUnifi.service ReolinkCameraMeetsUnifi.service.tmp
+
+# get user
+serviceuser=$(logname)
 # change user in service file
-sed -i -e "s|_USER_|$USER|g" ReolinkCameraMeetsUnifi.service.tmp
+sed -i -e "s|_USER_|$serviceuser|g" ReolinkCameraMeetsUnifi.service.tmp
 
 # change script filepath in service file
 DIRECTORY=$(cd `dirname $0` && pwd)
