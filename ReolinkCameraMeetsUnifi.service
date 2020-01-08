@@ -6,7 +6,7 @@ StartLimitIntervalSec=0
 Type=simple
 Restart=always
 RestartSec=1
-User=markus
+User=_USER_
 ExecStart=/usr/bin/env php toogleCameraService.php
 
 [Install]
