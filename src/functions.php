@@ -110,15 +110,15 @@ function anyConnectedClientDeviceMappedToAPDevice($controlleruser, $controllerpa
 function toogleMotionDetectionActions($reolink_connection, $toogleBoolean)
 {
 	// if the motion detection shall be enabled, toogle the IR lights on at first and
-	// wait for 10 seconds befor enabling the notifications in order to avoid
+	// wait for 15 seconds befor enabling the notifications in order to avoid
 	// false positive detections caused by the lightning change by the IR lights.
 	if ($toogleBoolean)
 	{
 		// toogle the near infrared lights
 		$reolink_connection->toggleInfraredLight($toogleBoolean);
 		
-		// wait 10 seconds for IR light to switch on
-		sleep(10);
+		// wait 15 seconds for IR light to switch on
+		sleep(15);
 
 		// toogle the e-mail send on a detected motion
 		$reolink_connection->toggleMotionEmail($toogleBoolean);
